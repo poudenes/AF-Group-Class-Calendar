@@ -1,0 +1,14 @@
+refresh:
+  fields:
+    config_entry_id:
+      selector:
+        config_entry:
+          integration: af_group_classes
+    force:
+      default: false
+      selector:
+        boolean:
+    image_path:
+      example: /config/www/rooster.jpg
+      selector:
+        text:

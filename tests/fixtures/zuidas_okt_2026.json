@@ -1,0 +1,333 @@
+{
+ "period": "Okt 2026",
+ "period_start": "2026-10-01",
+ "notes": {
+  "*Park": "Ontmoetingseiland Gijsbrecht van Aemstelpark"
+ },
+ "classes": [
+  {
+   "weekday": 0,
+   "start": "09:15",
+   "end": "10:15",
+   "name": "Pilates",
+   "room": "Studio",
+   "instructor": "Wiwit",
+   "info": null
+  },
+  {
+   "weekday": 0,
+   "start": "09:45",
+   "end": "10:00",
+   "name": "TRX 60+",
+   "room": "Funx Zone",
+   "instructor": "Dani",
+   "info": "15 min"
+  },
+  {
+   "weekday": 0,
+   "start": "11:00",
+   "end": "11:30",
+   "name": "TRX 60+",
+   "room": "Funx Zone",
+   "instructor": "Dani",
+   "info": "30 min"
+  },
+  {
+   "weekday": 0,
+   "start": "18:15",
+   "end": "19:15",
+   "name": "Cross Hiit",
+   "room": "Studio",
+   "instructor": "Edwin",
+   "info": null
+  },
+  {
+   "weekday": 0,
+   "start": "19:00",
+   "end": "20:00",
+   "name": "BBB",
+   "room": "Studio",
+   "instructor": "Dani",
+   "info": null
+  },
+  {
+   "weekday": 0,
+   "start": "20:00",
+   "end": "21:00",
+   "name": "Zak-Kickboks-Fit",
+   "room": "Studio",
+   "instructor": "Erkan",
+   "info": null
+  },
+  {
+   "weekday": 1,
+   "start": "09:15",
+   "end": "10:15",
+   "name": "Circuit Trainig",
+   "room": null,
+   "instructor": "Celestino",
+   "info": null
+  },
+  {
+   "weekday": 1,
+   "start": "10:30",
+   "end": "11:30",
+   "name": "Fit 60+",
+   "room": "*Park",
+   "instructor": "Celestino",
+   "info": null
+  },
+  {
+   "weekday": 1,
+   "start": "11:30",
+   "end": "12:30",
+   "name": "Yin Yoga",
+   "room": "Studio",
+   "instructor": "Lahma",
+   "info": null
+  },
+  {
+   "weekday": 1,
+   "start": "17:30",
+   "end": "18:30",
+   "name": "Pilates",
+   "room": "Studio",
+   "instructor": "Jacinda",
+   "info": null
+  },
+  {
+   "weekday": 1,
+   "start": "18:30",
+   "end": "19:30",
+   "name": "Total Body Workout",
+   "room": "Funx",
+   "instructor": "Joao",
+   "info": null
+  },
+  {
+   "weekday": 1,
+   "start": "18:30",
+   "end": "19:30",
+   "name": "Zumba",
+   "room": "Studio",
+   "instructor": "Bea",
+   "info": null
+  },
+  {
+   "weekday": 1,
+   "start": "19:30",
+   "end": "20:30",
+   "name": "Power Yoga",
+   "room": "Studio",
+   "instructor": "Marina",
+   "info": null
+  },
+  {
+   "weekday": 2,
+   "start": "09:15",
+   "end": "10:15",
+   "name": "TRX",
+   "room": "Studio",
+   "instructor": "Yvonne",
+   "info": null
+  },
+  {
+   "weekday": 2,
+   "start": "10:15",
+   "end": "11:15",
+   "name": "TRX",
+   "room": "Studio",
+   "instructor": "Yvonne",
+   "info": null
+  },
+  {
+   "weekday": 2,
+   "start": "10:30",
+   "end": "11:00",
+   "name": "TRX 60+",
+   "room": "Funx Zone",
+   "instructor": "João",
+   "info": "30 min"
+  },
+  {
+   "weekday": 2,
+   "start": "17:30",
+   "end": "18:30",
+   "name": "Power Hour",
+   "room": "Studio",
+   "instructor": "João",
+   "info": null
+  },
+  {
+   "weekday": 2,
+   "start": "18:30",
+   "end": "19:30",
+   "name": "Zak-Kickboks-Fit",
+   "room": "Studio",
+   "instructor": "Tim",
+   "info": null
+  },
+  {
+   "weekday": 2,
+   "start": "19:30",
+   "end": "20:30",
+   "name": "BBB",
+   "room": "Funx Zone",
+   "instructor": "Dani",
+   "info": null
+  },
+  {
+   "weekday": 3,
+   "start": "09:45",
+   "end": "10:15",
+   "name": "Stretch & stability",
+   "room": "Studio",
+   "instructor": "Dani",
+   "info": "30 min"
+  },
+  {
+   "weekday": 3,
+   "start": "10:30",
+   "end": "11:30",
+   "name": "Fit 60+",
+   "room": "*Park",
+   "instructor": "Celestino",
+   "info": null
+  },
+  {
+   "weekday": 3,
+   "start": "11:45",
+   "end": "12:45",
+   "name": "Yin Yoga",
+   "room": "Studio",
+   "instructor": "Lahma",
+   "info": null
+  },
+  {
+   "weekday": 3,
+   "start": "17:30",
+   "end": "18:30",
+   "name": "Power Yoga",
+   "room": "Studio",
+   "instructor": "Angelika",
+   "info": null
+  },
+  {
+   "weekday": 3,
+   "start": "18:15",
+   "end": "19:15",
+   "name": "Total Body Workout",
+   "room": "Funx",
+   "instructor": "Dani",
+   "info": null
+  },
+  {
+   "weekday": 3,
+   "start": "18:30",
+   "end": "19:30",
+   "name": "Pilates",
+   "room": "Studio",
+   "instructor": "Dimphna",
+   "info": null
+  },
+  {
+   "weekday": 4,
+   "start": "09:15",
+   "end": "10:15",
+   "name": "Pilates",
+   "room": "Studio",
+   "instructor": "Ylenia",
+   "info": null
+  },
+  {
+   "weekday": 4,
+   "start": "09:15",
+   "end": "09:30",
+   "name": "Buikspierkwartier",
+   "room": "Funx Zone",
+   "instructor": "Edwin",
+   "info": null
+  },
+  {
+   "weekday": 4,
+   "start": "11:00",
+   "end": "11:30",
+   "name": "Stretch & Stability",
+   "room": null,
+   "instructor": "Edwin",
+   "info": "30 min"
+  },
+  {
+   "weekday": 4,
+   "start": "18:30",
+   "end": "19:30",
+   "name": "Zumba",
+   "room": "Studio",
+   "instructor": "Berte",
+   "info": null
+  },
+  {
+   "weekday": 5,
+   "start": "09:15",
+   "end": "10:30",
+   "name": "TRX - Swissball",
+   "room": "Studio",
+   "instructor": "Yvonne",
+   "info": null
+  },
+  {
+   "weekday": 5,
+   "start": "09:30",
+   "end": "10:30",
+   "name": "Pump",
+   "room": "Funx Zone",
+   "instructor": "Edwin",
+   "info": null
+  },
+  {
+   "weekday": 5,
+   "start": "10:45",
+   "end": "11:45",
+   "name": "Cross Power",
+   "room": "Funx Zone",
+   "instructor": "João",
+   "info": null
+  },
+  {
+   "weekday": 5,
+   "start": "12:00",
+   "end": "13:00",
+   "name": "Zak-Kickboks-Fit",
+   "room": "Studio",
+   "instructor": "William",
+   "info": null
+  },
+  {
+   "weekday": 6,
+   "start": "10:00",
+   "end": "11:00",
+   "name": "Hiit",
+   "room": "Funx Zone",
+   "instructor": "Dani",
+   "info": null
+  },
+  {
+   "weekday": 6,
+   "start": "10:15",
+   "end": "11:15",
+   "name": "Pilates",
+   "room": "Studio",
+   "instructor": "Wiwit",
+   "info": null
+  },
+  {
+   "weekday": 6,
+   "start": "11:15",
+   "end": "12:15",
+   "name": "Yin Yoga",
+   "room": "Studio",
+   "instructor": "Lindsay",
+   "info": null
+  }
+ ]
+}

@@ -1,0 +1,65 @@
+{
+  "config": {
+    "step": {
+      "user": {
+        "title": "Anytime Fitness groepslessen",
+        "description": "Website van je club. Het groepslesrooster (plaatje) op die pagina wordt uitgelezen met een AI Task-entiteit (bijvoorbeeld Google Gemini, OpenAI, Anthropic of Ollama met een vision-model) en omgezet in de kalender \"Anytime Fitness group lessons\".",
+        "data": {
+          "url": "Website van de club",
+          "ai_task_entity": "AI Task-entiteit"
+        },
+        "data_description": {
+          "url": "De pagina met de knop \"Bekijk het rooster\", bv. https://afzuidas.nl/.",
+          "ai_task_entity": "Moet afbeeldingen kunnen lezen. Leeg laten = de standaard AI Task-entiteit uit Instellingen → Systeem → Algemeen."
+        }
+      },
+      "reconfigure": {
+        "title": "Anytime Fitness groepslessen",
+        "data": {
+          "url": "Website van de club",
+          "ai_task_entity": "AI Task-entiteit"
+        },
+        "data_description": {
+          "url": "De pagina met de knop \"Bekijk het rooster\", bv. https://afzuidas.nl/.",
+          "ai_task_entity": "Moet afbeeldingen kunnen lezen. Leeg laten = de standaard AI Task-entiteit."
+        }
+      }
+    },
+    "error": {
+      "invalid_url": "Dit is geen geldig webadres.",
+      "no_schedule": "Op deze pagina is geen roosterplaatje gevonden.",
+      "cannot_connect": "Kon deze pagina niet laden."
+    },
+    "abort": {
+      "already_configured": "Deze club is al ingesteld.",
+      "reconfigure_successful": "Instellingen opgeslagen.",
+      "unique_id_mismatch": "Dit is een andere club; voeg die als nieuwe integratie toe."
+    }
+  },
+  "issues": {
+    "site_blocked": {
+      "title": "Website van de club blokkeert Home Assistant",
+      "description": "{url} weigerde het verzoek van Home Assistant (HTTP 403, meestal botbescherming). De kalender blijft het laatst gelezen rooster tonen.\n\nZelf een nieuw rooster inladen: sla het roosterplaatje op als bv. `/config/www/rooster.jpg`, zet `/config/www` in `allowlist_external_dirs` in configuration.yaml en voer de actie `af_group_classes.refresh` uit met `image_path: /config/www/rooster.jpg`."
+    }
+  },
+  "services": {
+    "refresh": {
+      "name": "Rooster controleren",
+      "description": "Kijk nu of er een nieuw roosterplaatje op de website staat. Het plaatje wordt alleen opnieuw gelezen als het veranderd is, tenzij je dat forceert.",
+      "fields": {
+        "config_entry_id": {
+          "name": "Club",
+          "description": "Alleen deze club (standaard: alle)."
+        },
+        "force": {
+          "name": "Opnieuw lezen",
+          "description": "Lees het plaatje opnieuw met AI, ook als het niet veranderd is."
+        },
+        "image_path": {
+          "name": "Afbeeldingsbestand",
+          "description": "Lees dit lokale plaatje in plaats van de website (moet in allowlist_external_dirs staan)."
+        }
+      }
+    }
+  }
+}
