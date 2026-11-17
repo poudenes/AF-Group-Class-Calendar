@@ -1,0 +1,13 @@
+{
+  "domain": "af_group_classes",
+  "name": "Anytime Fitness Group Lessons",
+  "codeowners": ["@poudenes"],
+  "config_flow": true,
+  "dependencies": ["ai_task", "media_source"],
+  "documentation": "https://github.com/poudenes/AF-Group-Class-Calendar",
+  "integration_type": "service",
+  "iot_class": "cloud_polling",
+  "issue_tracker": "https://github.com/poudenes/AF-Group-Class-Calendar/issues",
+  "requirements": [],
+  "version": "1.0.0"
+}
