@@ -4,9 +4,15 @@ Zet het groepslesrooster van je Anytime Fitness-club als kalender in Home Assist
 **`calendar.anytime_fitness_group_lessons`** ("Anytime Fitness group lessons").
 
 Het rooster staat op de clubsite alleen als plaatje (knop **Bekijk het rooster**, bv. op
-[afzuidas.nl](https://afzuidas.nl/#groepslessen)). De integratie:
+[afzuidas.nl](https://afzuidas.nl/#groepslessen)). Het plaatje kan op twee manieren binnenkomen:
 
-1. haalt **elke dag** de clubpagina op en zoekt daarin het roosterplaatje;
+- **Website**: de integratie haalt het zelf van de clubsite.
+- **Mediamap**: je uploadt het zelf in Home Assistant onder **Media → Mijn media → Anytime Fitness**.
+  Nodig als de clubsite Home Assistant blokkeert (zie hieronder).
+
+De integratie:
+
+1. kijkt **elke dag** naar het roosterplaatje (op de website, of het nieuwste plaatje in de mediamap);
 2. vergelijkt het plaatje (SHA-256) met dat van de vorige keer;
 3. **zelfde plaatje → niets doen**, de kalender blijft zoals hij is;
 4. **ander plaatje → uitlezen** met een AI Task-entiteit (vision-model) en de kalender bijwerken.
@@ -40,8 +46,9 @@ vision-model. Het AI-model wordt alleen aangeroepen als het plaatje echt verande
    - Type: **Integration**
 2. Zoek **Anytime Fitness Group Lessons**, installeer en **herstart Home Assistant**.
 3. Instellingen → Apparaten & diensten → **Integratie toevoegen** → *Anytime Fitness Group Lessons*.
-4. Vul de website van je club in (standaard `https://afzuidas.nl/`) en kies de AI Task-entiteit
-   (leeg = de standaard AI Task-entiteit uit Instellingen → Systeem → Algemeen).
+4. Kies de bron (**Website** of **Mediamap**), vul bij Website de clubsite in (standaard
+   `https://afzuidas.nl/`) en kies de AI Task-entiteit (leeg = de standaard AI Task-entiteit uit
+   Instellingen → Systeem → Algemeen).
 
 Handmatig kan ook: kopieer `custom_components/af_group_classes` naar `config/custom_components/`
 en herstart.
@@ -56,25 +63,29 @@ Controleer nu meteen in plaats van te wachten op de dagelijkse controle.
 action: af_group_classes.refresh
 data:
   force: true            # optioneel: ook opnieuw uitlezen als het plaatje niet veranderd is
-  # image_path: /config/www/rooster.jpg   # optioneel: lokaal plaatje i.p.v. de website
+  # image_path: /media/rooster.jpg   # optioneel: eenmalig een ander lokaal plaatje lezen
 ```
 
 `force: true` is handig als het AI-model iets verkeerd heeft gelezen (bv. na het wisselen van model).
 
-## Als de website Home Assistant blokkeert
+## Als de website Home Assistant blokkeert: mediamap
 
-De clubsite draait achter Cloudflare. Weigert die het verzoek van Home Assistant (HTTP 403), dan
-krijg je een melding onder **Instellingen → Reparaties** en blijft de kalender het laatst
-gelezen rooster tonen. Je kunt het plaatje dan zelf aanleveren:
+De clubsite van AF Zuidas draait achter Cloudflare, en die weigert verzoeken van Home Assistant
+(HTTP 403). De integratie doet zich bewust niet voor als browser om dat te omzeilen. Je krijgt dan een
+melding onder **Instellingen → Reparaties** en de kalender blijft het laatst gelezen rooster tonen.
 
-1. Sla het roosterplaatje op als bv. `/config/www/rooster.jpg`.
-2. Zet in `configuration.yaml`:
-   ```yaml
-   homeassistant:
-     allowlist_external_dirs:
-       - /config/www
-   ```
-3. Voer de actie uit met `image_path: /config/www/rooster.jpg`.
+Gebruik in dat geval de mediamap:
+
+1. Integratie → ⋮ → **Opnieuw configureren** → bron **Mediamap** (of kies die meteen bij het toevoegen).
+   De kalender en de eerder gelezen roosters blijven bewaard. De map `Anytime Fitness` wordt aangemaakt.
+2. Sla het roosterplaatje van de clubsite op (in je browser: **Bekijk het rooster** → plaatje opslaan).
+3. Upload het in Home Assistant: **Media → Mijn media → Anytime Fitness → Uploaden**. Dat kan ook
+   vanaf je telefoon.
+4. Binnen een dag leest de integratie het uit. Wil je niet wachten, voer dan de actie
+   `af_group_classes.refresh` uit.
+
+Bij een nieuw rooster upload je gewoon het nieuwe plaatje. Het **nieuwst gewijzigde** plaatje in de
+map telt. Is het hetzelfde plaatje, dan gebeurt er niets.
 
 ## Attributen van de kalender
 

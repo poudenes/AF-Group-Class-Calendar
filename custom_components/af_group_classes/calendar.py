@@ -56,7 +56,7 @@ class GroupClassCalendar(CoordinatorEntity[ScheduleCoordinator], CalendarEntity)
             manufacturer="Anytime Fitness",
             model=entry.title,
             entry_type=DeviceEntryType.SERVICE,
-            configuration_url=entry.data.get("url"),
+            configuration_url=None if coordinator.uses_media_folder else entry.data.get("url"),
         )
 
     @property

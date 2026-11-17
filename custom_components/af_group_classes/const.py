@@ -9,6 +9,11 @@ DOMAIN: Final = "af_group_classes"
 
 CONF_URL: Final = "url"
 CONF_AI_TASK_ENTITY: Final = "ai_task_entity"
+CONF_SOURCE: Final = "source"
+
+SOURCE_WEBSITE: Final = "website"
+SOURCE_MEDIA: Final = "media"
+MEDIA_FOLDER: Final = "Anytime Fitness"  # Media -> My media -> Anytime Fitness
 
 DEFAULT_URL: Final = "https://afzuidas.nl/"
 CALENDAR_NAME: Final = "Anytime Fitness group lessons"

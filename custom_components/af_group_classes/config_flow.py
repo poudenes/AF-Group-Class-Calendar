@@ -1,4 +1,4 @@
-"""Config flow: club website + which AI Task entity reads the schedule image."""
+"""Config flow: where the schedule image comes from + which AI Task entity reads it."""
 
 from __future__ import annotations
 
@@ -12,17 +12,30 @@ from homeassistant.helpers.aiohttp_client import async_get_clientsession
 from homeassistant.helpers.selector import (
     EntitySelector,
     EntitySelectorConfig,
+    SelectSelector,
+    SelectSelectorConfig,
+    SelectSelectorMode,
     TextSelector,
     TextSelectorConfig,
     TextSelectorType,
 )
 
-from .const import CONF_AI_TASK_ENTITY, CONF_URL, DEFAULT_URL, DOMAIN
+from .const import (
+    CONF_AI_TASK_ENTITY,
+    CONF_SOURCE,
+    CONF_URL,
+    DEFAULT_URL,
+    DOMAIN,
+    MEDIA_FOLDER,
+    SOURCE_MEDIA,
+    SOURCE_WEBSITE,
+)
 from .coordinator import (
     NoScheduleImageError,
     ScheduleError,
     SiteBlockedError,
     find_image_url,
+    media_folder,
 )
 
 _LOGGER = logging.getLogger(__name__)
@@ -44,7 +57,16 @@ def normalize_url(value: str) -> str | None:
 def _schema(defaults: dict[str, Any]) -> vol.Schema:
     return vol.Schema(
         {
-            vol.Required(CONF_URL, default=defaults.get(CONF_URL, DEFAULT_URL)): TextSelector(
+            vol.Required(
+                CONF_SOURCE, default=defaults.get(CONF_SOURCE, SOURCE_WEBSITE)
+            ): SelectSelector(
+                SelectSelectorConfig(
+                    options=[SOURCE_WEBSITE, SOURCE_MEDIA],
+                    translation_key=CONF_SOURCE,
+                    mode=SelectSelectorMode.LIST,
+                )
+            ),
+            vol.Optional(CONF_URL, default=defaults.get(CONF_URL, DEFAULT_URL)): TextSelector(
                 TextSelectorConfig(type=TextSelectorType.URL)
             ),
             vol.Optional(
@@ -55,22 +77,41 @@ def _schema(defaults: dict[str, Any]) -> vol.Schema:
     )
 
 
+def _unique_id(data: dict[str, Any]) -> str:
+    if data[CONF_SOURCE] == SOURCE_MEDIA:
+        return SOURCE_MEDIA
+    return urlparse(data[CONF_URL]).hostname or data[CONF_URL]
+
+
+def _title(data: dict[str, Any]) -> str:
+    if data[CONF_SOURCE] == SOURCE_MEDIA:
+        return f"Media: {MEDIA_FOLDER}"
+    return _unique_id(data)
+
+
 class AFGroupClassesConfigFlow(ConfigFlow, domain=DOMAIN):
     """Add a club whose group class schedule should become a calendar."""
 
     VERSION = 1
 
     async def _validate(self, user_input: dict[str, Any]) -> tuple[dict[str, Any], dict[str, str]]:
-        url = normalize_url(user_input[CONF_URL])
+        source = user_input.get(CONF_SOURCE, SOURCE_WEBSITE)
+        url = normalize_url(user_input.get(CONF_URL) or DEFAULT_URL)
         if url is None:
             return {}, {CONF_URL: "invalid_url"}
-        data = {CONF_URL: url, CONF_AI_TASK_ENTITY: user_input.get(CONF_AI_TASK_ENTITY)}
+        data = {
+            CONF_SOURCE: source,
+            CONF_URL: url,
+            CONF_AI_TASK_ENTITY: user_input.get(CONF_AI_TASK_ENTITY),
+        }
+        if source == SOURCE_MEDIA:
+            if media_folder(self.hass) is None:
+                return {}, {"base": "no_media_dir"}
+            return data, {}
         try:
             await find_image_url(async_get_clientsession(self.hass), url)
         except SiteBlockedError:
-            # Website blocks Home Assistant; still allow setup: a repair issue explains
-            # how to feed the image yourself with the refresh action.
-            _LOGGER.warning("%s refused the request (HTTP 403)", url)
+            return {}, {"base": "blocked"}
         except NoScheduleImageError:
             return {}, {"base": "no_schedule"}
         except ScheduleError as exc:
@@ -83,12 +124,14 @@ class AFGroupClassesConfigFlow(ConfigFlow, domain=DOMAIN):
         if user_input is not None:
             data, errors = await self._validate(user_input)
             if not errors:
-                host = urlparse(data[CONF_URL]).hostname or data[CONF_URL]
-                await self.async_set_unique_id(host)
+                await self.async_set_unique_id(_unique_id(data))
                 self._abort_if_unique_id_configured()
-                return self.async_create_entry(title=host, data=data)
+                return self.async_create_entry(title=_title(data), data=data)
         return self.async_show_form(
-            step_id="user", data_schema=_schema(user_input or {}), errors=errors
+            step_id="user",
+            data_schema=_schema(user_input or {}),
+            errors=errors,
+            description_placeholders={"folder": MEDIA_FOLDER},
         )
 
     async def async_step_reconfigure(
@@ -99,11 +142,13 @@ class AFGroupClassesConfigFlow(ConfigFlow, domain=DOMAIN):
         if user_input is not None:
             data, errors = await self._validate(user_input)
             if not errors:
-                await self.async_set_unique_id(urlparse(data[CONF_URL]).hostname)
-                self._abort_if_unique_id_mismatch()
-                return self.async_update_reload_and_abort(entry, data=data)
+                # Switching website <-> media folder keeps the calendar and its history.
+                return self.async_update_reload_and_abort(
+                    entry, unique_id=_unique_id(data), title=_title(data), data=data
+                )
         return self.async_show_form(
             step_id="reconfigure",
             data_schema=_schema(user_input or dict(entry.data)),
             errors=errors,
+            description_placeholders={"folder": MEDIA_FOLDER},
         )

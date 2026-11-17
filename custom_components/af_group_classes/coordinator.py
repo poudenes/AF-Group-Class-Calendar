@@ -24,10 +24,13 @@ from homeassistant.util import dt as dt_util
 from .const import (
     AI_INSTRUCTIONS,
     CONF_AI_TASK_ENTITY,
+    CONF_SOURCE,
     CONF_URL,
     DOMAIN,
     ISSUE_BLOCKED,
     MAX_VERSIONS,
+    MEDIA_FOLDER,
+    SOURCE_MEDIA,
     UPDATE_INTERVAL,
 )
 from .schedule import (
@@ -96,6 +99,23 @@ def _image_type(content_type: str | None, name: str) -> str:
     raise ScheduleError(f"{name} is not a JPEG, PNG or WebP image")
 
 
+def media_folder(hass: HomeAssistant) -> Path | None:
+    """The folder you upload the schedule to: Media -> My media -> Anytime Fitness."""
+    dirs = hass.config.media_dirs
+    base = dirs.get("local") or next(iter(dirs.values()), None)
+    return Path(base) / MEDIA_FOLDER if base else None
+
+
+def newest_image(folder: Path) -> Path | None:
+    """Most recently changed JPEG/PNG/WebP in the folder (runs in the executor)."""
+    images = [
+        p
+        for p in folder.glob("*")
+        if p.is_file() and mimetypes.guess_type(p.name)[0] in IMAGE_TYPES
+    ]
+    return max(images, key=lambda p: p.stat().st_mtime, default=None)
+
+
 def _monday(day: date) -> date:
     return day - timedelta(days=day.weekday())
 
@@ -162,8 +182,17 @@ class ScheduleCoordinator(DataUpdateCoordinator[dict[str, Any]]):
         self.image_dir = Path(hass.config.path(STORAGE_DIR, DOMAIN))
         self._image_path: Path | None = None
 
+    @property
+    def uses_media_folder(self) -> bool:
+        return self.config_entry.data.get(CONF_SOURCE) == SOURCE_MEDIA
+
     async def async_load(self) -> None:
         """Load what was read before, so the calendar works straight after a restart."""
+        if self.uses_media_folder and (folder := media_folder(self.hass)):
+            # Create it so it shows up in the media browser, ready for an upload.
+            await self.hass.async_add_executor_job(
+                lambda: folder.mkdir(parents=True, exist_ok=True)
+            )
         self.data = await self._store.async_load() or {"versions": []}
         if ext := self.data.get("image_ext"):
             self._image_path = self.image_dir / f"{self.config_entry.entry_id}{ext}"
@@ -195,6 +224,16 @@ class ScheduleCoordinator(DataUpdateCoordinator[dict[str, Any]]):
 
         if image_file:
             image, mime, image_url = await self._read_local(image_file)
+        elif self.uses_media_folder:
+            folder = media_folder(self.hass)
+            if folder is None:
+                raise ScheduleError("Home Assistant has no media folder configured")
+            newest = await self.hass.async_add_executor_job(newest_image, folder)
+            if newest is None:
+                raise NoScheduleImageError(
+                    f"No schedule image yet: upload it in Media -> My media -> {MEDIA_FOLDER}"
+                )
+            image, mime, image_url = await self._read_local(str(newest), check_allowed=False)
         else:
             session = async_get_clientsession(self.hass)
             try:
@@ -237,8 +276,10 @@ class ScheduleCoordinator(DataUpdateCoordinator[dict[str, Any]]):
         await self._store.async_save(state)
         return state
 
-    async def _read_local(self, image_file: str) -> tuple[bytes, str, str]:
-        if not self.hass.config.is_allowed_path(image_file):
+    async def _read_local(
+        self, image_file: str, *, check_allowed: bool = True
+    ) -> tuple[bytes, str, str]:
+        if check_allowed and not self.hass.config.is_allowed_path(image_file):
             raise ScheduleError(
                 f"{image_file} is not in allowlist_external_dirs of configuration.yaml"
             )
