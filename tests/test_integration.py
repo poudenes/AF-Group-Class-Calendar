@@ -2,6 +2,7 @@
 
 from __future__ import annotations
 
+import os
 from datetime import timedelta
 from pathlib import Path
 
@@ -68,21 +69,31 @@ async def test_config_flow(hass: HomeAssistant, site: FakeSite, ai: FakeAI) -> N
     )
     assert result["type"] is FlowResultType.CREATE_ENTRY
     assert result["title"] == "afzuidas.nl"
-    assert result["data"] == {"url": URL, "ai_task_entity": None}
+    assert result["data"] == {"source": "website", "url": URL, "ai_task_entity": None}
     await hass.async_block_till_done(wait_background_tasks=True)
     assert hass.states.get(CAL) is not None
     assert ai.calls[0]["entity_id"] is None  # default AI Task entity
 
 
-async def test_config_flow_allows_blocked_site(
-    hass: HomeAssistant, site: FakeSite, ai: FakeAI
+async def test_config_flow_blocked_site_suggests_media(
+    hass: HomeAssistant, site: FakeSite, ai: FakeAI, tmp_path: Path
 ) -> None:
+    hass.config.media_dirs = {"local": str(tmp_path)}
     site.serve(b"", status=403)
     result = await hass.config_entries.flow.async_init(DOMAIN, context={"source": SOURCE_USER})
     result = await hass.config_entries.flow.async_configure(result["flow_id"], {"url": URL})
+    assert result["errors"] == {"base": "blocked"}
+
+    result = await hass.config_entries.flow.async_configure(
+        result["flow_id"], {"source": "media", "url": URL}
+    )
     assert result["type"] is FlowResultType.CREATE_ENTRY
+    assert result["title"] == "Media: Anytime Fitness"
+    assert result["result"].unique_id == "media"
     await hass.async_block_till_done(wait_background_tasks=True)
-    assert ir.async_get(hass).async_get_issue(DOMAIN, f"site_blocked_{result['result'].entry_id}")
+    assert (tmp_path / "Anytime Fitness").is_dir()  # ready for an upload
+    assert ai.calls == []
+    assert not any(r[1].host == "afzuidas.nl" for r in site.mock.mock_calls[1:])
 
 
 async def test_calendar_and_daily_check(
@@ -237,3 +248,55 @@ async def test_media_source_and_unload(
     await hass.config_entries.async_remove(entry.entry_id)
     await hass.async_block_till_done(wait_background_tasks=True)
     assert not list(Path(hass.config.path(".storage", DOMAIN)).glob(f"{entry.entry_id}.*"))
+
+
+async def test_media_folder_source(
+    hass: HomeAssistant,
+    site: FakeSite,
+    ai: FakeAI,
+    entry: MockConfigEntry,
+    freezer: FrozenDateTimeFactory,
+    tmp_path: Path,
+) -> None:
+    """Blocked website -> switch to media folder; history stays, uploads are picked up."""
+    hass.config.media_dirs = {"local": str(tmp_path)}
+    await _setup(hass, entry)
+    assert len(ai.calls) == 1
+
+    # Reconfigure to the media folder.
+    result = await entry.start_reconfigure_flow(hass)
+    result = await hass.config_entries.flow.async_configure(
+        result["flow_id"], {"source": "media", "url": URL}
+    )
+    assert result["reason"] == "reconfigure_successful"
+    await hass.async_block_till_done(wait_background_tasks=True)
+    assert entry.unique_id == "media"
+    folder = tmp_path / "Anytime Fitness"
+    assert folder.is_dir()
+    # Empty folder: old schedule stays, no AI call.
+    assert len(ai.calls) == 1
+    assert hass.states.get(CAL).attributes["classes_per_week"] == 36
+
+    # Upload: picked up at the next daily check.
+    site.serve(b"", status=403)  # website is no longer used
+    (folder / "rooster.jpg").write_bytes(b"uploaded-v1")
+    freezer.tick(timedelta(days=1, minutes=1))
+    async_fire_time_changed(hass)
+    await hass.async_block_till_done(wait_background_tasks=True)
+    assert ai.images[-1] == b"uploaded-v1"
+    assert hass.states.get(CAL).attributes["schedule_image"].endswith("rooster.jpg")
+    assert ir.async_get(hass).async_get_issue(DOMAIN, f"site_blocked_{entry.entry_id}") is None
+
+    # Same file next day: nothing.
+    freezer.tick(timedelta(days=1, minutes=1))
+    async_fire_time_changed(hass)
+    await hass.async_block_till_done(wait_background_tasks=True)
+    assert len(ai.calls) == 2
+
+    # A newer upload with another name wins.
+    newer = folder / "rooster-dec.png"
+    newer.write_bytes(b"uploaded-v2")
+    os.utime(newer, (2_000_000_000, 2_000_000_000))
+    await hass.services.async_call(DOMAIN, "refresh", {}, blocking=True)
+    assert ai.images[-1] == b"uploaded-v2"
+    assert ai.calls[-1]["attachments"][0]["media_content_type"] == "image/png"

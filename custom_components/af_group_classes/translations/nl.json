@@ -3,43 +3,47 @@
     "step": {
       "user": {
         "title": "Anytime Fitness groepslessen",
-        "description": "Website van je club. Het groepslesrooster (plaatje) op die pagina wordt uitgelezen met een AI Task-entiteit (bijvoorbeeld Google Gemini, OpenAI, Anthropic of Ollama met een vision-model) en omgezet in de kalender \"Anytime Fitness group lessons\".",
+        "description": "Waar komt het roosterplaatje vandaan?\n\n- **Website**: het plaatje achter \"Bekijk het rooster\" op de clubsite.\n- **Mediamap**: je uploadt het plaatje zelf in Media → Mijn media → {folder}. Kies dit als de clubsite Home Assistant blokkeert.\n\nHet plaatje wordt uitgelezen met een AI Task-entiteit die afbeeldingen kan lezen (bijvoorbeeld Google Gemini, OpenAI, Anthropic of Ollama met een vision-model) en wordt de kalender \"Anytime Fitness group lessons\". Elke dag wordt gekeken of het plaatje veranderd is; alleen dan wordt het opnieuw gelezen.",
         "data": {
+          "source": "Bron",
           "url": "Website van de club",
           "ai_task_entity": "AI Task-entiteit"
         },
         "data_description": {
-          "url": "De pagina met de knop \"Bekijk het rooster\", bv. https://afzuidas.nl/.",
+          "url": "Alleen voor de bron website: de pagina met de knop \"Bekijk het rooster\", bv. https://afzuidas.nl/.",
           "ai_task_entity": "Moet afbeeldingen kunnen lezen. Leeg laten = de standaard AI Task-entiteit uit Instellingen → Systeem → Algemeen."
         }
       },
       "reconfigure": {
         "title": "Anytime Fitness groepslessen",
+        "description": "Waar komt het roosterplaatje vandaan?\n\n- **Website**: het plaatje achter \"Bekijk het rooster\" op de clubsite.\n- **Mediamap**: je uploadt het plaatje zelf in Media → Mijn media → {folder}. Kies dit als de clubsite Home Assistant blokkeert.\n\nHet plaatje wordt uitgelezen met een AI Task-entiteit die afbeeldingen kan lezen (bijvoorbeeld Google Gemini, OpenAI, Anthropic of Ollama met een vision-model) en wordt de kalender \"Anytime Fitness group lessons\". Elke dag wordt gekeken of het plaatje veranderd is; alleen dan wordt het opnieuw gelezen.",
         "data": {
+          "source": "Bron",
           "url": "Website van de club",
           "ai_task_entity": "AI Task-entiteit"
         },
         "data_description": {
-          "url": "De pagina met de knop \"Bekijk het rooster\", bv. https://afzuidas.nl/.",
-          "ai_task_entity": "Moet afbeeldingen kunnen lezen. Leeg laten = de standaard AI Task-entiteit."
+          "url": "Alleen voor de bron website: de pagina met de knop \"Bekijk het rooster\", bv. https://afzuidas.nl/.",
+          "ai_task_entity": "Moet afbeeldingen kunnen lezen. Leeg laten = de standaard AI Task-entiteit uit Instellingen → Systeem → Algemeen."
         }
       }
     },
     "error": {
       "invalid_url": "Dit is geen geldig webadres.",
       "no_schedule": "Op deze pagina is geen roosterplaatje gevonden.",
-      "cannot_connect": "Kon deze pagina niet laden."
+      "cannot_connect": "Kon deze pagina niet laden.",
+      "blocked": "De website blokkeert Home Assistant (HTTP 403). Kies de bron Mediamap.",
+      "no_media_dir": "Home Assistant heeft geen mediamap ingesteld."
     },
     "abort": {
-      "already_configured": "Deze club is al ingesteld.",
-      "reconfigure_successful": "Instellingen opgeslagen.",
-      "unique_id_mismatch": "Dit is een andere club; voeg die als nieuwe integratie toe."
+      "already_configured": "Deze bron is al ingesteld.",
+      "reconfigure_successful": "Instellingen opgeslagen."
     }
   },
   "issues": {
     "site_blocked": {
       "title": "Website van de club blokkeert Home Assistant",
-      "description": "{url} weigerde het verzoek van Home Assistant (HTTP 403, meestal botbescherming). De kalender blijft het laatst gelezen rooster tonen.\n\nZelf een nieuw rooster inladen: sla het roosterplaatje op als bv. `/config/www/rooster.jpg`, zet `/config/www` in `allowlist_external_dirs` in configuration.yaml en voer de actie `af_group_classes.refresh` uit met `image_path: /config/www/rooster.jpg`."
+      "description": "{url} weigerde het verzoek van Home Assistant (HTTP 403, botbescherming). De kalender blijft het laatst gelezen rooster tonen.\n\nStap over op de mediamap: open deze integratie → ⋮ → **Opnieuw configureren** → bron **Mediamap**. Upload daarna het roosterplaatje in **Media → Mijn media → Anytime Fitness**. De kalender en de geschiedenis blijven bewaard."
     }
   },
   "services": {
@@ -59,6 +63,14 @@
           "name": "Afbeeldingsbestand",
           "description": "Lees dit lokale plaatje in plaats van de website (moet in allowlist_external_dirs staan)."
         }
+      }
+    }
+  },
+  "selector": {
+    "source": {
+      "options": {
+        "website": "Website van de club",
+        "media": "Mediamap (zelf het plaatje uploaden)"
       }
     }
   }

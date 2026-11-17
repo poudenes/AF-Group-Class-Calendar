@@ -3,43 +3,47 @@
     "step": {
       "user": {
         "title": "Anytime Fitness group lessons",
-        "description": "Website of your club. The group class schedule image on that page is read with an AI Task entity (for example Google Gemini, OpenAI, Anthropic or Ollama with a vision model) and turned into the calendar \"Anytime Fitness group lessons\".",
+        "description": "Where does the group class schedule image come from?\n\n- **Website**: the image behind \"Bekijk het rooster\" on the club site.\n- **Media folder**: you upload the image yourself in Media → My media → {folder}. Use this when the club website blocks Home Assistant.\n\nThe image is read with an AI Task entity that can read images (for example Google Gemini, OpenAI, Anthropic or Ollama with a vision model) and becomes the calendar \"Anytime Fitness group lessons\". It is checked daily and only read again when it changed.",
         "data": {
+          "source": "Source",
           "url": "Club website",
           "ai_task_entity": "AI Task entity"
         },
         "data_description": {
-          "url": "The page with the \"Bekijk het rooster\" button, e.g. https://afzuidas.nl/.",
+          "url": "Only for the website source: the page with the \"Bekijk het rooster\" button, e.g. https://afzuidas.nl/.",
           "ai_task_entity": "Must be able to read images. Leave empty to use the default AI Task entity from Settings → System → General."
         }
       },
       "reconfigure": {
         "title": "Anytime Fitness group lessons",
+        "description": "Where does the group class schedule image come from?\n\n- **Website**: the image behind \"Bekijk het rooster\" on the club site.\n- **Media folder**: you upload the image yourself in Media → My media → {folder}. Use this when the club website blocks Home Assistant.\n\nThe image is read with an AI Task entity that can read images (for example Google Gemini, OpenAI, Anthropic or Ollama with a vision model) and becomes the calendar \"Anytime Fitness group lessons\". It is checked daily and only read again when it changed.",
         "data": {
+          "source": "Source",
           "url": "Club website",
           "ai_task_entity": "AI Task entity"
         },
         "data_description": {
-          "url": "The page with the \"Bekijk het rooster\" button, e.g. https://afzuidas.nl/.",
-          "ai_task_entity": "Must be able to read images. Leave empty to use the default AI Task entity."
+          "url": "Only for the website source: the page with the \"Bekijk het rooster\" button, e.g. https://afzuidas.nl/.",
+          "ai_task_entity": "Must be able to read images. Leave empty to use the default AI Task entity from Settings → System → General."
         }
       }
     },
     "error": {
       "invalid_url": "This is not a valid web address.",
       "no_schedule": "No schedule image was found on this page.",
-      "cannot_connect": "Could not load this page."
+      "cannot_connect": "Could not load this page.",
+      "blocked": "The website blocks Home Assistant (HTTP 403). Choose the media folder source instead.",
+      "no_media_dir": "Home Assistant has no media folder configured."
     },
     "abort": {
-      "already_configured": "This club is already configured.",
-      "reconfigure_successful": "Settings saved.",
-      "unique_id_mismatch": "This is a different club; add it as a new entry instead."
+      "already_configured": "This source is already configured.",
+      "reconfigure_successful": "Settings saved."
     }
   },
   "issues": {
     "site_blocked": {
       "title": "Club website blocks Home Assistant",
-      "description": "{url} refused the request from Home Assistant (HTTP 403, usually bot protection). The calendar keeps showing the last schedule it read.\n\nTo load a new schedule yourself: save the schedule image to e.g. `/config/www/rooster.jpg`, add `/config/www` to `allowlist_external_dirs` in configuration.yaml and run the action `af_group_classes.refresh` with `image_path: /config/www/rooster.jpg`."
+      "description": "{url} refused the request from Home Assistant (HTTP 403, bot protection). The calendar keeps showing the last schedule it read.\n\nSwitch to the media folder: open this integration → ⋮ → **Reconfigure** → source **Media folder**. Then upload the schedule image in **Media → My media → Anytime Fitness**. The calendar and its history stay."
     }
   },
   "services": {
@@ -59,6 +63,14 @@
           "name": "Image file",
           "description": "Read this local image instead of the website (must be in allowlist_external_dirs)."
         }
+      }
+    }
+  },
+  "selector": {
+    "source": {
+      "options": {
+        "website": "Website of the club",
+        "media": "Media folder (upload the image yourself)"
       }
     }
   }
