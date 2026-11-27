@@ -236,9 +236,9 @@ def describe(group_class: GroupClass, notes: dict[str, str]) -> tuple[str | None
     location = group_class.room
     lines: list[str] = []
     if group_class.instructor:
-        lines.append(f"Trainer: {group_class.instructor}")
+        lines.append(f"Instructor: {group_class.instructor}")
     if group_class.room:
-        lines.append(f"Zaal: {group_class.room}")
+        lines.append(f"Room: {group_class.room}")
     if group_class.info:
         lines.append(group_class.info)
     found = _note_for(group_class.room, notes) or _note_for(group_class.name, notes)

@@ -118,11 +118,11 @@ def test_events_for_a_tuesday() -> None:
     fit = events[1]
     assert fit.location == "Park – Ontmoetingseiland Gijsbrecht van Aemstelpark"
     assert fit.description == (
-        "Trainer: Celestino\nZaal: *Park\n*Park: Ontmoetingseiland Gijsbrecht van Aemstelpark"
+        "Instructor: Celestino\nRoom: *Park\n*Park: Ontmoetingseiland Gijsbrecht van Aemstelpark"
     )
     assert fit.end == datetime(2026, 11, 17, 11, 30, tzinfo=AMS)
     assert fit.uid == "2026-11-17-10:30-fit-60"
-    assert events[0].description == "Trainer: Celestino"
+    assert events[0].description == "Instructor: Celestino"
 
 
 def test_events_respect_valid_from_and_versions() -> None:
