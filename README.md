@@ -1,6 +1,7 @@
 # Anytime Fitness Group Lessons for Home Assistant
 
 [![HACS Custom](https://img.shields.io/badge/HACS-Custom-41BDF5.svg)](https://hacs.xyz/)
+[![Release](https://img.shields.io/github/v/release/poudenes/AF-Group-Class-Calendar)](https://github.com/poudenes/AF-Group-Class-Calendar/releases)
 [![Validate](https://github.com/poudenes/AF-Group-Class-Calendar/actions/workflows/validate.yml/badge.svg)](https://github.com/poudenes/AF-Group-Class-Calendar/actions/workflows/validate.yml)
 
 Turn the group class schedule of your Anytime Fitness club into a Home Assistant calendar:
@@ -194,9 +195,16 @@ python -m pytest
 
 ## Releasing a new version
 
-1. Bump `version` in `custom_components/af_group_classes/manifest.json`.
-2. Commit and push.
-3. Create a GitHub release with tag `vX.Y.Z`. HACS offers it as an update.
+Versions follow [Semantic Versioning](https://semver.org/) (`MAJOR.MINOR.PATCH`): PATCH for
+fixes, MINOR for new features, MAJOR for changes that need users to reconfigure.
+
+1. Set `version` in `custom_components/af_group_classes/manifest.json` to the new version.
+2. Add a `## [X.Y.Z] - YYYY-MM-DD` section to [CHANGELOG.md](CHANGELOG.md).
+3. Commit and push, and wait until **Validate** is green.
+4. Tag and push: `git tag vX.Y.Z && git push origin vX.Y.Z`.
+
+The **Release** workflow checks that the tag matches the manifest version and creates the GitHub
+release with the changelog notes. HACS then offers it as an update.
 
 ## License
 
