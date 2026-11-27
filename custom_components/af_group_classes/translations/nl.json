@@ -10,7 +10,7 @@
           "ai_task_entity": "AI Task-entiteit"
         },
         "data_description": {
-          "url": "Alleen voor de bron website: de pagina met de knop \"Bekijk het rooster\", bv. https://afzuidas.nl/.",
+          "url": "Alleen voor de bron website: de pagina met de knop \"Bekijk het rooster\", bv. {example_url}.",
           "ai_task_entity": "Moet afbeeldingen kunnen lezen. Leeg laten = de standaard AI Task-entiteit uit Instellingen → Systeem → Algemeen."
         }
       },
@@ -23,7 +23,7 @@
           "ai_task_entity": "AI Task-entiteit"
         },
         "data_description": {
-          "url": "Alleen voor de bron website: de pagina met de knop \"Bekijk het rooster\", bv. https://afzuidas.nl/.",
+          "url": "Alleen voor de bron website: de pagina met de knop \"Bekijk het rooster\", bv. {example_url}.",
           "ai_task_entity": "Moet afbeeldingen kunnen lezen. Leeg laten = de standaard AI Task-entiteit uit Instellingen → Systeem → Algemeen."
         }
       }

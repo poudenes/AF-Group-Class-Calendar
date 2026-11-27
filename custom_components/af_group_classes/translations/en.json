@@ -10,7 +10,7 @@
           "ai_task_entity": "AI Task entity"
         },
         "data_description": {
-          "url": "Only for the website source: the page with the \"Bekijk het rooster\" button, e.g. https://afzuidas.nl/.",
+          "url": "Only for the website source: the page with the \"Bekijk het rooster\" button, e.g. {example_url}.",
           "ai_task_entity": "Must be able to read images. Leave empty to use the default AI Task entity from Settings → System → General."
         }
       },
@@ -23,7 +23,7 @@
           "ai_task_entity": "AI Task entity"
         },
         "data_description": {
-          "url": "Only for the website source: the page with the \"Bekijk het rooster\" button, e.g. https://afzuidas.nl/.",
+          "url": "Only for the website source: the page with the \"Bekijk het rooster\" button, e.g. {example_url}.",
           "ai_task_entity": "Must be able to read images. Leave empty to use the default AI Task entity from Settings → System → General."
         }
       }

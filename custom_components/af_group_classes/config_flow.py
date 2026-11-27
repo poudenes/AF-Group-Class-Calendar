@@ -131,7 +131,7 @@ class AFGroupClassesConfigFlow(ConfigFlow, domain=DOMAIN):
             step_id="user",
             data_schema=_schema(user_input or {}),
             errors=errors,
-            description_placeholders={"folder": MEDIA_FOLDER},
+            description_placeholders={"folder": MEDIA_FOLDER, "example_url": DEFAULT_URL},
         )
 
     async def async_step_reconfigure(
@@ -150,5 +150,5 @@ class AFGroupClassesConfigFlow(ConfigFlow, domain=DOMAIN):
             step_id="reconfigure",
             data_schema=_schema(user_input or dict(entry.data)),
             errors=errors,
-            description_placeholders={"folder": MEDIA_FOLDER},
+            description_placeholders={"folder": MEDIA_FOLDER, "example_url": DEFAULT_URL},
         )

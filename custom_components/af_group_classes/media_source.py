@@ -19,7 +19,7 @@ from homeassistant.config_entries import ConfigEntryState
 from homeassistant.core import HomeAssistant
 
 from .const import DOMAIN
-from .coordinator import IMAGE_TYPES, AFConfigEntry
+from .coordinator import IMAGE_TYPES, AFConfigEntry, ScheduleCoordinator
 
 MIME_BY_EXT = {ext: mime for mime, ext in IMAGE_TYPES.items()}
 
@@ -27,6 +27,13 @@ MIME_BY_EXT = {ext: mime for mime, ext in IMAGE_TYPES.items()}
 async def async_get_media_source(hass: HomeAssistant) -> ScheduleMediaSource:
     """Set up the schedule image media source."""
     return ScheduleMediaSource(hass)
+
+
+def _coordinator(entry: AFConfigEntry) -> ScheduleCoordinator | None:
+    """The entry's coordinator once setup has created it (and until it is unloaded)."""
+    if entry.state not in (ConfigEntryState.LOADED, ConfigEntryState.SETUP_IN_PROGRESS):
+        return None
+    return getattr(entry, "runtime_data", None)
 
 
 class ScheduleMediaSource(MediaSource):
@@ -42,14 +49,14 @@ class ScheduleMediaSource(MediaSource):
         return [
             entry
             for entry in self.hass.config_entries.async_entries(DOMAIN)
-            if entry.state is ConfigEntryState.LOADED
+            if _coordinator(entry) is not None
         ]
 
     async def async_resolve_media(self, item: MediaSourceItem) -> PlayMedia:
         entry = self.hass.config_entries.async_get_entry(item.identifier)
-        if entry is None or entry.domain != DOMAIN or entry.state is not ConfigEntryState.LOADED:
+        # Not "state is LOADED": the first check can run while setup is still finishing.
+        if entry is None or entry.domain != DOMAIN or (coordinator := _coordinator(entry)) is None:
             raise Unresolvable(f"Unknown schedule {item.identifier}")
-        coordinator = entry.runtime_data
         path = coordinator.image_path()
         if path is None or not await self.hass.async_add_executor_job(path.is_file):
             raise Unresolvable("No schedule image downloaded yet")
